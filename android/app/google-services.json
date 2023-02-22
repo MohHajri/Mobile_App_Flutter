@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "876524938962",
+    "project_id": "flutter-whmp-project",
+    "storage_bucket": "flutter-whmp-project.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:876524938962:android:cb13c4e7bdedbdb9c96f0b",
+        "android_client_info": {
+          "package_name": "com.example.grade_five_whmp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "876524938962-c397dnq9gb366d975t7p8iiamvi9a6h6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDrw6N0jkohTb6G1__lDBeOreNlmCODNag"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "876524938962-c397dnq9gb366d975t7p8iiamvi9a6h6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
