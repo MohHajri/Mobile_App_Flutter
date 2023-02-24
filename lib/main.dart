@@ -12,14 +12,7 @@ import "homeScreen.dart";
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: const FirebaseOptions(
-      apiKey: 'AIzaSyDrw6N0jkohTb6G1__lDBeOreNlmCODNag',
-      appId: "1:876524938962:android:cb13c4e7bdedbdb9c96f0b",
-      messagingSenderId: "876524938962",
-      projectId: "flutter-whmp-project",
-    ),
-  );
+  await Firebase.initializeApp();
   final prefs = await SharedPreferences.getInstance();
   final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
   final user = FirebaseAuth.instance.currentUser;
