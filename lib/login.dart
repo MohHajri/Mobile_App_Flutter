@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
 import 'homeScreen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import "homeScreen.dart";
 
-final FirebaseAuth _auth = FirebaseAuth.instance;
+// final FirebaseAuth _auth = FirebaseAuth.instance;
+// final firestore = FirebaseFirestore.instance;
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -13,35 +16,92 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  late User user;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   int _success = 1;
   String _userEmail = '';
 
-  void _login() async {
-    final User? user = (await _auth.signInWithEmailAndPassword(
-      email: _emailController.text,
-      password: _passwordController.text,
-    ))
-        .user;
-    if (user != null) {
+  @override
+  void initState() {
+    super.initState();
+    _checkCurrentUser();
+  }
+
+  void _checkCurrentUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+    final user = FirebaseAuth.instance.currentUser;
+    if (isLoggedIn && user != null) {
+      // check if user is logged in
       setState(() {
         _success = 2;
         _userEmail = user.email!;
       });
-      _navigateToHomePage();
-    } else {
-      setState(() {
-        _success = 3;
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+  }
+
+  void _saveUserLoggedInState(bool isLoggedIn) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setBool('isLoggedIn', isLoggedIn);
+  }
+
+  void _login() async {
+    try {
+      // Attempt to sign in with the user's credentials
+      final userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+
+      // Get the user's ID and create a Firestore document for them
+      final userId = userCredential.user!.uid;
+      final userRef =
+          FirebaseFirestore.instance.collection('users').doc(userId);
+      await userRef.set({
+        'email': userCredential.user!.email,
+        'timestamp': DateTime.now(),
       });
+
+      // Update the UI to indicate a successful login
+      setState(() {
+        _success = 2;
+        _userEmail = userCredential.user!.email!;
+      });
+
+      // Save user logged in state
+      _saveUserLoggedInState(true);
+
+      // Navigate to the home page
+      _navigateToHomePage();
+    } on FirebaseAuthException catch (e) {
+      // Handle any errors that occur during sign-in
+      if (e.code == 'user-not-found' || e.code == 'wrong-password') {
+        setState(() {
+          _success = 3;
+        });
+      } else {
+        print('Error during sign-in: ${e.code}');
+      }
     }
   }
 
   void _navigateToHomePage() {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (BuildContext context) => const MyHomePage()),
-    );
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (BuildContext context) => MyHomePage(user: user),
+        ),
+      );
+    }
   }
 
   @override
@@ -56,7 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 Container(
                   padding: const EdgeInsets.fromLTRB(15.0, 110.0, 0.0, 0.0),
                   child: const Text(
-                    'Hello Hajri',
+                    'Hello there',
                     style:
                         TextStyle(fontSize: 40.0, fontWeight: FontWeight.bold),
                   ),

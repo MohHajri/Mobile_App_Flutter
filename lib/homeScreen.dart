@@ -1,9 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'bmi_calculator.dart';
 import 'weather_view.dart';
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key}) : super(key: key);
+  final User user; // Define the named parameter 'user'
+  const MyHomePage({required this.user, Key? key}) : super(key: key);
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
