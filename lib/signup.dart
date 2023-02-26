@@ -14,7 +14,7 @@ class SignupPage extends StatefulWidget {
 class _SignupPageState extends State<SignupPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  late bool _success;
+  late bool _success = false;
   late String _userEmail;
 
   void _register() async {
@@ -123,7 +123,23 @@ class _SignupPageState extends State<SignupPage> {
                       ),
                     )
                   ],
-                )
+                ),
+                if (_success) // Conditional widget to show the message
+                  Container(
+                    padding: const EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                      color: Colors.green,
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: const Text(
+                      'Signup success, go to login',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Montserrat',
+                      ),
+                    ),
+                  ),
               ],
             ),
           )

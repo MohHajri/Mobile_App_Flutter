@@ -42,11 +42,23 @@ class _WeatherViewState extends State<WeatherView> {
   }
 
   Future<void> _getLocationAndWeather() async {
-    // First, get the user's current location
+    // Check if the app has permission to access location
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      // Request permission to access location
+      permission = await Geolocator.requestPermission();
+      if (permission != LocationPermission.whileInUse &&
+          permission != LocationPermission.always) {
+        // User denied the permission request
+        throw Exception('Location permission is required');
+      }
+    }
+
+    // Get the user's current location
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
 
-    // Then, fetch the weather data for that location
+    // Fetch the weather data for that location
     await _fetchWeatherData(position.latitude, position.longitude);
   }
 
